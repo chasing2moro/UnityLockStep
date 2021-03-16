@@ -1,1 +1,1 @@
-gameId=obg-ok3grvax,secretKey=4ca633be7f9ea8e742d5bb808e837b018669d234,server=ok3grvax.wxlagame.com
+gameId=替换为你的,secretKey=替换为你的,server=替换为你的
