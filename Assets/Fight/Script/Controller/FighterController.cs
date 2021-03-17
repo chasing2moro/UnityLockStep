@@ -48,12 +48,12 @@ public class FighterController: MonoBehaviour, KartGame.KartSystems.IControllabl
     }
 
     float deltaTime;
-    void Update()
+    void FixedUpdate()
     {
         if (serverDatas.Count == 0)
             return;
 
-        deltaTime = Time.deltaTime;
+        deltaTime = Time.fixedDeltaTime;
         fighterLogic.HandleData(serverDatas.Dequeue());
         fighterLogic.OnUpdate(ref deltaTime);
     }

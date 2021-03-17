@@ -17,8 +17,8 @@ public class FighterServerData
     public DeltaMove deltaMove;
     public bool isPlayHitAction;
     public Vector2 position;
-
     public ulong frameId;
+    public bool isMySelf;
 
     public override string ToString()
     {

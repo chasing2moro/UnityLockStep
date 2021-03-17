@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 public class  FighterLogic : MonoBehaviour, IFighterInfo
 {
-    Vector2 _postion;//横版格斗游戏，没有z轴方向
+    Vector3 _postion;//横版格斗游戏，没有z轴方向
     float _hp;
 
-    public Vector2 postion{get=>_postion;}
+    public Vector3 postion{get=>_postion;}
     public float hp{get=>_hp;}
 
     public FighterStats defaultStats;
@@ -27,8 +27,8 @@ public class  FighterLogic : MonoBehaviour, IFighterInfo
 
     float accumilateTime = 0;
 
-    DeltaMove deltaMove = DeltaMove.None;
-    
+
+
     public void HandleData(FighterServerData data){
        if(!this.isHitting){
            if(data.isPlayHitAction){
@@ -36,17 +36,50 @@ public class  FighterLogic : MonoBehaviour, IFighterInfo
                 this.isDamageOther = false;
            }
        }
-       deltaMove = data.deltaMove;
-        Debug.Log("deltaMove:" + deltaMove);
-    }
-    public FighterLogic otherFighter;
 
+       //if(data.deltaMove != DeltaMove.None)
+       // {
+       //     if (data.isMySelf)
+       //     {
+       //         Debug.Log("frameid:" + data.frameId + " move:" + data.deltaMove);
+       //     }
+       //     else
+       //     {
+       //         Debug.LogWarning("frameid:" + data.frameId + " move:" + data.deltaMove);
+       //     }
+       // }
+
+        HandleDataDeltaMove(data.deltaMove);
+
+    }
+
+    void HandleDataDeltaMove(DeltaMove deltaMove)
+    {
+        switch (deltaMove)
+        {
+            case DeltaMove.Left:
+                this._postion.x -= 0.1f;
+                break;
+            case DeltaMove.None:
+                break;
+            case DeltaMove.Right:
+                this._postion.x += 0.1f;
+                break;
+            default:
+                break;
+        }
+        
+    }
+
+    public FighterLogic otherFighter;
+    
     void Awake()
     {
         currentModifiers = new List<IFighterStatsModifier>();
         tempModifiers = new List<IFighterStatsModifier>();
         defaultStats = new FighterStats();
         modifiedStats = new FighterStats();
+        this._postion = this.transform.localPosition;
     }
 
     //外部调用
@@ -55,7 +88,7 @@ public class  FighterLogic : MonoBehaviour, IFighterInfo
 
 
         this.UpdateModifier();
-        this.UpdateMove();
+        this.UpdateMove(ref dt);
         this.UpdateHit();
         this.UpdateHP();
     }
@@ -65,22 +98,10 @@ public class  FighterLogic : MonoBehaviour, IFighterInfo
         ClearTempModifiers();
     }
 
-    void UpdateMove()
+    float moveFactor = 10;
+    void UpdateMove(ref float dt)
     {
-        switch (deltaMove)
-        {
-            case DeltaMove.Left:
-                this.transform.Translate(Vector3.left * 0.1f, Space.Self);
-                break;
-            case DeltaMove.None:
-                break;
-            case DeltaMove.Right:
-                this.transform.Translate(Vector3.right * 0.1f, Space.Self);
-                break;
-            default:
-                break;
-        }
-        deltaMove = DeltaMove.None;
+        this.transform.localPosition = Vector3.MoveTowards(this.transform.localPosition, this._postion, moveFactor * dt);
     }
 
     void UpdateHit(){
@@ -90,7 +111,7 @@ public class  FighterLogic : MonoBehaviour, IFighterInfo
                 //出拳
 
                 //两个人之间的距离
-                float distanceEachOther = Vector2.Distance(this.postion, this.otherFighter.postion);
+                float distanceEachOther = Vector3.Distance(this.postion, this.otherFighter.postion);
 
                 //拳头伸出的距离
                 float distanceStretchedOut = modifiedStats.attackDistance * hitDuration/modifiedStats.attackDurationHalf;

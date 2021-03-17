@@ -134,7 +134,7 @@ public class Client : MonoBehaviour {
         // Global.SecretKey = "3b11876f7ac511c0533c46cce8ddbe5e832716ae";
         // Global.Server = "2ll8gv12.wxlagame.com";
 
-  
+        #region 初始化sdk需要的个人注册参数
         string[] mgobeConfigArray = this.MGOBEconfig.text.Split(',');
         System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(".*=", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
         for (int i = 0; i < 3; i++)
@@ -156,6 +156,7 @@ public class Client : MonoBehaviour {
                     break;
             }
         }
+        #endregion
 
         GameInfoPara gameInfo = new GameInfoPara {
             GameId = Global.GameId,
@@ -714,11 +715,14 @@ public class Client : MonoBehaviour {
 
             if (game.otherFighters.ContainsKey(item.PlayerId)) {
                 serverdata = serverParser.OnFrameOther(item.Data);
+                serverdata.isMySelf = false;
 #if kIsDebugFrame
                 sbDebugLog.AppendFormat("|other:{0}", serverdata.ToString());
 #endif
-            }else {
+            }
+            else {
                 serverdata = serverParser.OnFrameMySelf(item.Data);
+                serverdata.isMySelf = true;
 #if kIsDebugFrame
                 sbDebugLog.AppendFormat("|myself:{0}", serverdata.ToString());
 #endif
